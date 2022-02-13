@@ -1,0 +1,16 @@
+{
+	"CN": "Group Five CA",
+	"key": {
+		"algo": "rsa",
+		"size": 2048
+	},
+	"names": [
+		{
+			"C": "DE",
+			"L": "BW",
+			"ST": "Stuttgart",
+			"O": "Uni Stuttgart",
+			"OU": "DS Practicals - CA Services"
+		}
+	]
+}
