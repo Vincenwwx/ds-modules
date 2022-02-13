@@ -1,3 +1,8 @@
+// Server container for a Raft Consensus Module. Exposes Raft to the network
+// and enables RPCs between Raft peers.
+//
+// Eli Bendersky [https://eli.thegreenplace.net]
+// This code is in the public domain.
 package raft
 
 import (
@@ -57,7 +62,7 @@ func (s *Server) Serve() {
 	s.rpcServer.RegisterName("ConsensusModule", s.rpcProxy)
 
 	var err error
-	s.listener, err = net.Listen("tcp", ":8888")
+	s.listener, err = net.Listen("tcp", ":0")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -85,7 +90,6 @@ func (s *Server) Serve() {
 			}()
 		}
 	}()
-	s.wg.Wait()
 }
 
 // DisconnectAll closes all the client connections to peers for this server.
@@ -114,12 +118,11 @@ func (s *Server) GetListenAddr() net.Addr {
 	return s.listener.Addr()
 }
 
-func (s *Server) ConnectToPeer(peerId int, addr string) error {
+func (s *Server) ConnectToPeer(peerId int, addr net.Addr) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.peerClients[peerId] == nil {
-		client, err := rpc.Dial("tcp", addr)
-		//client, err := rpc.Dial(addr.Network(), addr.String())
+		client, err := rpc.Dial(addr.Network(), addr.String())
 		if err != nil {
 			return err
 		}
